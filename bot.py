@@ -51,7 +51,7 @@ async def help(ctx):
                            inline=False)
     help_message.add_field(
         name="----------------------------------------------\nDeveloper : Shnap \nDiscord: Shnap#5581",
-        value="If there are any problems DM me.")
+        value="**If there are any problems or want to make a custom bot, contact me.**")
 
     await ctx.send(embed=help_message)
 
@@ -154,12 +154,23 @@ async def show_list(ctx):
 @client.command()
 async def setup(ctx):
     global ticket_msg
-    if ticket_msg is not None:
-        await ticket_msg.delete()
+    try:
+        if ticket_msg is not None:
+            await ticket_msg.delete()
+    except:
+        ticket_msg = None
+
     await ctx.message.delete()
     if not ctx.message.author.guild_permissions.administrator:
         await ctx.message.author.send(embed=unable_msg)
         return
+    global ticket_opener
+    ticket_opener = discord.Embed(
+        title='Ban Appeal',
+        description='To create a ban appeal react with ' + emoji,
+        colour=discord.Colour.blue()
+    )
+    ticket_opener.set_footer(text="Made by Shnap#5581")
     ticket_msg = await ctx.send(embed=ticket_opener)
     await ticket_msg.add_reaction(emoji)
 
@@ -185,7 +196,7 @@ async def on_reaction_add(reaction, user):
         for role in roles:
             await channel_created.set_permissions(role, read_messages=True, send_messages=True)
         await channel_created.send("Welcome " + user.mention + "!")
-        temp_msg = await channel_created.send(embed=ticket_responder)
+        temp_msg = await channel_created.send(embed=ticket_responder2)
         await temp_msg.add_reaction(close_ticket)
         await reaction.remove(user)
         return
@@ -248,12 +259,31 @@ ticket_responder = discord.Embed(
     description='Fill out your appeal below.\n Staff will be with you shortly.\nTo close This ticket react with 🔒',
     colour=discord.Colour.blue(),
 )
-ticket_responder.set_footer(text="Made by Shnap")
+ticket_responder2 = discord.Embed(
+    description="Please fill out the information below in a message: "
+)
+ticket_responder2.add_field(name="In Game Name:",
+                            value="-",
+                           inline=False)
+ticket_responder2.add_field(name="\nWhy You Were Banned:",
+                            value="-",
+                            inline=False)
+ticket_responder2.add_field(name="\nWhen Were You Banned:",
+                           value="-",
+                            inline=False)
+ticket_responder2.add_field(name="\nWho Banned You:",
+                            value="-",
+                            inline=False)
+ticket_responder2.add_field(name="\nWhy You Wish To Appeal",
+                            value="-",
+                            inline=False)
+ticket_responder.set_footer(text="Made by Shnap#5581")
 
 global ticket_2step
 ticket_2step = discord.Embed(
     description="Are you sure you want to delete the Ban Appeal?\n React ✅ to close it.\n React ⛔ to Open it again.\n React 🔖 to save the ban appeal. "
 )
+
 
 global unable_msg
 unable_msg = discord.Embed(
@@ -263,13 +293,6 @@ unable_msg = discord.Embed(
 global unable_t
 unable_t = discord.Embed(
     description="Unable to save the transcript.\nReason: There is no designated place created for the transcript to be saved"
-)
-
-global ticket_opener
-ticket_opener = discord.Embed(
-    title='Ban Appeal',
-    description='To create a ban appeal react with ' + emoji,
-    colour=discord.Colour.blue()
 )
 
 global error_t
