@@ -4,17 +4,17 @@ from discord.utils import get
 
 intents = discord.Intents.all()
 client = commands.Bot(command_prefix='.', help_command=None, intents=intents)
-roles = []
-emoji = "🎫"
-close_ticket = "🔒"
-final_close = "✅"
-reopen = "⛔"
-transcript = "🔖"
-ticket_msg = None
-tickets_category = None
-categoryT = None
+roles = [] # the roles that can see the ban appeals
+emoji = "🎫" #default ticket emoji
+close_ticket = "🔒" #default close ticket emoji
+final_close = "✅"#default final close ticket emoji
+reopen = "⛔"##default reopen ticket emoji
+transcript = "🔖"#default save ticket emoji
+ticket_msg = None #saved the setup message
+tickets_category = None #saves the category of the setup msg
+categoryT = None # the category where the transcripts go to
 
-transcript_rdy = False
+transcript_rdy = False # boolean if added a category for transcripts
 
 
 @client.event
@@ -24,7 +24,7 @@ async def on_ready():
 
 
 @client.command()
-async def help(ctx):
+async def help(ctx):#shows all the commands that can be used within this bot
     help_message = discord.Embed(
         colour=discord.Color.gold(),
         description="The bot's prefix is   . "
@@ -64,7 +64,7 @@ def role_check(role):
 
 
 @client.command(aliases=['role_add', 'addRole'])
-async def add(ctx):
+async def add(ctx):#adds the roles that were mentioned to the roles list
     if not ctx.message.author.guild_permissions.administrator:
         ctx.message.author.send(embed=unable_msg)
         return
@@ -77,7 +77,7 @@ async def add(ctx):
 
 
 @client.command(aliases=['transcriptS', 'saveT'])
-async def saved_category(ctx, *, category):
+async def saved_category(ctx, *, category): # gets the name of the category and remembers it as the place to save the transcripts 
     global transcript_rdy
     if not ctx.message.author.guild_permissions.administrator:
         ctx.message.author.send(embed=unable_msg)
@@ -90,7 +90,7 @@ async def saved_category(ctx, *, category):
 
 
 @client.command()
-async def setEmoji(ctx, *, emojiUse):
+async def setEmoji(ctx, *, emojiUse): #gets an emoji and changes the ticket emoji
     global emoji
     if not ctx.message.author.guild_permissions.administrator:
         await ctx.message.author.send(embed=unable_msg)
@@ -101,7 +101,7 @@ async def setEmoji(ctx, *, emojiUse):
 
 
 @client.command(aliases=['role_remove', 'removeRole'])
-async def remove(ctx, *, all):
+async def remove(ctx, *, all): #removes the role/ roles that were mentioned, can also type all to delete all roles
     if not ctx.message.author.guild_permissions.administrator:
         await ctx.message.author.send(embed=unable_msg)
         return
@@ -125,7 +125,7 @@ async def remove(ctx, *, all):
 
 
 @client.command(aliases=['showL', "roleList"])
-async def show_list(ctx):
+async def show_list(ctx): #sends an embed with all the roles that can see the ban appeals
     temp_roles = []
     if not ctx.message.author.guild_permissions.administrator:
         await ctx.message.author.send(embed=unable_msg)
@@ -152,7 +152,7 @@ async def show_list(ctx):
 
 
 @client.command()
-async def setup(ctx):
+async def setup(ctx):#creats the ticket opener message and deletes the last ticket opener if was one.
     global ticket_msg
     try:
         if ticket_msg is not None:
@@ -181,7 +181,7 @@ async def on_reaction_add(reaction, user):
     global tickets_category
     hasRole = False
 
-    # opening ticket
+    # opening ticket from the ticket 
     if reaction.message.id == ticket_msg.id and reaction.emoji == emoji and user.id != ticket_msg.author.id:
         tickets_category = reaction.message.channel.category
         if categoryT != tickets_category:
@@ -201,7 +201,7 @@ async def on_reaction_add(reaction, user):
         await reaction.remove(user)
         return
 
-    # closing ticket
+    # closing ticket from the ticket response message
     if reaction.message.author.id == 769529065232924684 and (
             reaction.message.channel.category == tickets_category or reaction.message.channel.category.name.lower() == categoryT) and ticket_msg.channel != reaction.message.channel and user.id != reaction.message.author.id:
 
@@ -211,20 +211,20 @@ async def on_reaction_add(reaction, user):
                     hasRole = True
                     break
         if hasRole:
-            if reaction.emoji == close_ticket:  # the close ticket
+            if reaction.emoji == close_ticket:  # the close ticket emoji check
                 await reaction.remove(user)
                 temp_msg = await reaction.message.channel.send(embed=ticket_2step)
                 await temp_msg.add_reaction(final_close)
                 await temp_msg.add_reaction(reopen)
                 await temp_msg.add_reaction(transcript)
                 return
-            elif reaction.emoji == final_close:  # the check mark
+            elif reaction.emoji == final_close:  # the check mark emoji check
                 await reaction.message.channel.delete()
                 return
             elif reaction.emoji == reopen:  # the reopen
                 await reaction.message.delete()
                 return
-            elif reaction.emoji == transcript:  # the transcript
+            elif reaction.emoji == transcript:  # the transcript emoji check
                 channel_holder = reaction.message.channel
                 if not transcript_rdy:
                     await channel_holder.send(embed=unable_t)
@@ -253,7 +253,7 @@ async def on_reaction_add(reaction, user):
 
         await reaction.remove(user)
 
-
+#all the embeds that dont needs changes(like setup and showL) and are used in the code.
 global ticket_responder
 ticket_responder = discord.Embed(
     description='Fill out your appeal below.\n Staff will be with you shortly.\nTo close This ticket react with 🔒',
