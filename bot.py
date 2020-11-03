@@ -299,4 +299,4 @@ global error_t
 error_t = discord.Embed(
     description="Unable to save the transcript.\nReason: The category given doesn't exist anymore/ The name given was typed wrong"
 )
-client.run('NzY5NTI5MDY1MjMyOTI0Njg0.X5QVyg.D7DfkWz6BcUZ-_9BRsmJ4_jsUIo')
+client.run("The bot's token")
